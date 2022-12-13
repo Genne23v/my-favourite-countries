@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  My_Favourite_Countries
-//
-//  Created by Wonkeun No on 2022-12-12.
-//
-
 import SwiftUI
 import CoreData
 
@@ -12,40 +5,71 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \FavouriteCountry.name, ascending: true)],
         animation: .default)
-    private var items: FetchedResults<Item>
+    private var favouriteCountries: FetchedResults<FavouriteCountry>
+    @State private var viewDidLoad = false
+    @State var countries:[Country] = []
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
+        List(countries, id: \.id) { country in
+            VStack{
+                HStack{
+                    Text("\(country.name)").fontWeight(.bold)
+                    Spacer()
+                    Text("\(country.countryCode)").fontWeight(.bold)
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                HStack{
+                    Text("Capital: \(country.capital)")
+                        .font(.subheadline)
+                        .fontWeight(.thin)
+                    Spacer()
+                    Text("Population: \(country.population)")
+                        .font(.subheadline)
+                        .fontWeight(.thin)
                 }
             }
-            Text("Select an item")
+        }
+        .onAppear{
+            let restCountryApiEndpoint = "https://restcountries.com/v2/all"
+            
+            guard let apiUrl = URL(string: restCountryApiEndpoint) else {
+                print("Could not convert the string endpoint to an URL object")
+                return
+            }
+            
+            URLSession.shared.dataTask(with: apiUrl) { (data, response, error) in
+                if let err = error {
+                    print("Error occurred while fetching data from API")
+                    print(err)
+                    return
+                }
+                
+                guard let data = data else {
+                    print("Error occurred while fetching data from API")
+                    return
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let decodedItem:[Country] = try decoder.decode([Country].self, from: data)
+                    
+                    DispatchQueue.main.async {
+                        countries = decodedItem
+                        print(countries.count)
+                    }
+                } catch let error {
+                    print("An error occurred during JSON decoding")
+                    print(error)
+                }
+            }.resume()
         }
     }
 
-    private func addItem() {
+    private func addToFavourite() {
         withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+//            let newCountry = Country(context: viewContext)
+            
 
             do {
                 try viewContext.save()
@@ -60,7 +84,7 @@ struct ContentView: View {
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
+//            offsets.map { countries[$0] }.forEach(viewContext.delete)
 
             do {
                 try viewContext.save()
@@ -83,6 +107,7 @@ private let itemFormatter: DateFormatter = {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
+//            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
