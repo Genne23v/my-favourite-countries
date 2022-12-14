@@ -1,3 +1,11 @@
+//
+//  FavouriteCountry+CoreDataProperties.swift
+//  My_Favourite_Countries
+//
+//  Created by Wonkeun No on 2022-12-14.
+//
+//
+
 import Foundation
 import CoreData
 

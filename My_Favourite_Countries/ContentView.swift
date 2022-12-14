@@ -9,8 +9,9 @@ struct ContentView: View {
     private var favouriteCountries: FetchedResults<FavouriteCountry>
     @State var countries:[Country] = []
     @State private var isShowingAlert = false
-    @State private var addingCountry = ""
     @State private var viewDidLoad = false
+    @State private var isExsitingId = false
+    @State private var userMessage = ""
     
     var body: some View {
         List(countries, id: \.id) { country in
@@ -30,24 +31,38 @@ struct ContentView: View {
                         .fontWeight(.thin)
                 }
             }.onTapGesture {
-                let addToFavourite:FavouriteCountry = FavouriteCountry(context: viewContext)
-                addToFavourite.id = country.id
-                addToFavourite.name = country.name
-                addToFavourite.countryCode = country.countryCode
-                addToFavourite.capital = country.capital
-                addToFavourite.population = Int32(country.population)
+                print("\(country.id) - \(country.name)")
                 
-                do {
-                    try viewContext.save()
-                    isShowingAlert = true
-                    addingCountry = country.name
-                } catch {
-                    print("Could not save it to CoreData")
-                    print(error)
+                for favouriteCountry in favouriteCountries {
+                    if favouriteCountry.name == country.name {
+                        print("CoreData: \(favouriteCountry.name) vs. Selected ID: \(country.name)")
+                        isExsitingId = true
+                    }
                 }
-                print("\(country.name) added to favourite")
+                
+                if isExsitingId == false {
+                    let addToFavourite:FavouriteCountry = FavouriteCountry(context: viewContext)
+                    addToFavourite.id = country.id
+                    addToFavourite.name = country.name
+                    addToFavourite.countryCode = country.countryCode
+                    addToFavourite.capital = country.capital
+                    addToFavourite.population = Int32(country.population)
+                    
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        print("Could not save it to CoreData")
+                        print(error)
+                    }
+                    print("\(country.name) added to favourite")
+                    userMessage = "\(country.name) added to favourite list!"
+                } else {
+                    userMessage = "\(country.name) is already in favourite list"
+                }
+                isShowingAlert = true
+                isExsitingId = false
             }
-            .alert("\(addingCountry) added to favourite list!", isPresented: $isShowingAlert) { }
+            .alert(userMessage, isPresented: $isShowingAlert) { }
         }
         .onAppear{
             if viewDidLoad == false {
@@ -100,7 +115,6 @@ struct ContentView: View {
             do {
                 try viewContext.save()
                 isShowingAlert = true
-                addingCountry = country.name
                 print("\(country.name) added to favourite")
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
