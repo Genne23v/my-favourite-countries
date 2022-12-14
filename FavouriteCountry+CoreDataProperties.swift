@@ -1,11 +1,3 @@
-//
-//  FavouriteCountry+CoreDataProperties.swift
-//  My_Favourite_Countries
-//
-//  Created by Wonkeun No on 2022-12-14.
-//
-//
-
 import Foundation
 import CoreData
 
@@ -21,6 +13,7 @@ extension FavouriteCountry {
     @NSManaged public var id: UUID?
     @NSManaged public var name: String?
     @NSManaged public var population: Int32
+    @NSManaged public var flagLink: String?
 
 }
 

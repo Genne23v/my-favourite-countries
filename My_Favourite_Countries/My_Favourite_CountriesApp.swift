@@ -6,8 +6,6 @@ struct My_Favourite_CountriesApp: App {
 
     var body: some Scene {
         WindowGroup {
-//            MainView()
-//                .environment(\.managedObjectContext, persistenceController.container.viewContext)
             TabView {
                 ContentView()
                     .environment(\.managedObjectContext, persistenceController.container.viewContext)

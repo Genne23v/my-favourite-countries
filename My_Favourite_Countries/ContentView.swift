@@ -17,6 +17,20 @@ struct ContentView: View {
         List(countries, id: \.id) { country in
             VStack{
                 HStack{
+                    AsyncImage(url: URL(string: country.flagLink ?? "")) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 32, height: 24)
+                        case .failure(let error):
+                            Image(systemName: "photo")
+                        case .empty:
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        }
+                    }
                     Text("\(country.name)").fontWeight(.bold)
                     Spacer()
                     Text("\(country.countryCode)").fontWeight(.bold)
@@ -47,6 +61,7 @@ struct ContentView: View {
                     addToFavourite.countryCode = country.countryCode
                     addToFavourite.capital = country.capital
                     addToFavourite.population = Int32(country.population)
+                    addToFavourite.flagLink = country.flagLink
                     
                     do {
                         try viewContext.save()
@@ -91,7 +106,7 @@ struct ContentView: View {
                         
                         DispatchQueue.main.async {
                             countries = decodedItem
-                            print(countries.count)
+                            print("\(countries.count) countries are fetched")
                         }
                         viewDidLoad = true
                     } catch let error {

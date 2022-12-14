@@ -3,6 +3,7 @@
     <entity name="FavouriteCountry" representedClassName="FavouriteCountry" syncable="YES">
         <attribute name="capital" optional="YES" attributeType="String"/>
         <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="flagLink" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="population" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>

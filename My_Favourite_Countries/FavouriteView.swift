@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct FavouriteView: View {
-//    @EnvironmentObject var manager: DataManager
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: FavouriteCountry.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \FavouriteCountry.name, ascending: true)], animation: .default) var favouriteCountries: FetchedResults<FavouriteCountry>
     @State private var isShowingAlert = false
@@ -11,6 +10,20 @@ struct FavouriteView: View {
         List(favouriteCountries, id: \.id) { country in
             VStack{
                 HStack{
+                    AsyncImage(url: URL(string: country.flagLink ?? "")) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 32, height: 24)
+                        case .failure(let error):
+                            Image(systemName: "photo")
+                        case .empty:
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        }
+                    }
                     Text("\(country.name ?? "n/a")").fontWeight(.bold)
                     Spacer()
                     Text("\(country.countryCode ?? "n/a")").fontWeight(.bold)
@@ -42,15 +55,6 @@ struct FavouriteView: View {
                 }
             }.alert("\(removingCountry) removed in favourite list", isPresented: $isShowingAlert) { }
         }
-        .onAppear {
-            for country in favouriteCountries {
-                print("\(country.id) - \(country.name ?? "n/a")")
-            }
-        }
-    }
-    
-    func fetchFavouriteCountries() {
-
     }
     
     struct FavouriteView_Previews: PreviewProvider {
