@@ -1,10 +1,3 @@
-//
-//  Persistence.swift
-//  My_Favourite_Countries
-//
-//  Created by Wonkeun No on 2022-12-12.
-//
-
 import CoreData
 
 struct PersistenceController {

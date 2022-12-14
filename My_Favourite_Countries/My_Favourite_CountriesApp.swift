@@ -1,10 +1,3 @@
-//
-//  My_Favourite_CountriesApp.swift
-//  My_Favourite_Countries
-//
-//  Created by Wonkeun No on 2022-12-12.
-//
-
 import SwiftUI
 
 @main
@@ -13,8 +6,20 @@ struct My_Favourite_CountriesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+//            MainView()
+//                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            TabView {
+                ContentView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                    .tabItem {
+                        Label("Countries", systemImage: "flag")
+                }
+                FavouriteView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                    .tabItem {
+                        Label("Favourite", systemImage: "star")
+                    }
+            }
         }
     }
 }
